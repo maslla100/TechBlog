@@ -1,12 +1,39 @@
 {
+  "name": "techblog",
+  "version": "1.0.0",
+  "description": "techblog",
+  "main": "server.js",
+  "scripts": {
+    "start": "NODE_ENV=production node app.js",
+    "dev": "NODE_ENV=development nodemon app.js",
+    "watch": "nodemon server.js",
+    "seed:all": "npx sequelize-cli db:seed:all",
+    "seed:booking": "npx sequelize-cli db:seed --seed create.js"
+  },
+  "keywords": [],
+  "author": "Luis Llamas",
+  "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "connect-flash": "^0.1.1",
     "connect-session-sequelize": "^7.1.7",
-    "dotenv": "^16.4.5",
-    "express": "^4.18.3",
+    "dotenv": "^16.4.4",
+    "express": "^4.18.2",
     "express-handlebars": "^7.1.2",
+    "express-rate-limit": "^7.1.5",
     "express-session": "^1.18.0",
-    "mysql2": "^3.9.2",
-    "sequelize": "^6.37.1"
+    "express-validator": "^7.0.1",
+    "helmet": "^7.1.0",
+    "method-override": "^3.0.0",
+    "moment": "^2.30.1",
+    "mysql2": "^3.9.1",
+    "parse-database-url": "^0.3.0",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "sequelize": "^6.37.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "nodemon": "^3.1.0"
   }
 }
