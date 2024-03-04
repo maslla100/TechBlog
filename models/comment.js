@@ -2,30 +2,34 @@ const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/config'); // Ensure this path correctly points to your Sequelize config
 
 module.exports = (sequelize) => {
-    class Post extends Model { }
+    class Comment extends Model { }
 
-    Post.init({
-        // Define model attributes
+    Comment.init({
+        // Model attributes are defined here
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
             autoIncrement: true
         },
-        title: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
         content: {
             type: DataTypes.TEXT,
             allowNull: false
+        },
+        postId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'posts', // Assuming 'posts' is the table name
+                key: 'id',
+            }
         },
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'users', // 'users' refers to table name
-                key: 'id', // 'id' refers to column name in users table
+                model: 'users', // Assuming 'users' is the table name
+                key: 'id',
             }
         },
         createdAt: {
@@ -39,11 +43,11 @@ module.exports = (sequelize) => {
             defaultValue: DataTypes.NOW
         }
     }, {
-        // Model options
-        sequelize, // Passing the connection instance
-        modelName: 'posts', // Choosing the model name
-        tableName: 'posts', // Defining the table name explicitly
-        timestamps: false // Opting out of Sequelize's automatic timestamp management
+        sequelize,
+        modelName: 'Comment',
+        tableName: 'comments',
+        timestamps: true // Changed to true for automatic handling
     });
 
+    return Comment; // Ensure you return the model
 };

@@ -1,4 +1,3 @@
-// Import necessary modules
 const express = require('express');
 const { engine } = require('express-handlebars');
 const bodyParser = require('body-parser');
@@ -64,7 +63,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Import models and database connection
-const { sequelize } = require('./models');
+const { sequelize } = require('./models/index');
 
 // Setup session with Sequelize store
 const sessionStore = new SequelizeStore({ db: sequelize });

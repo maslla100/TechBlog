@@ -54,16 +54,6 @@ const customerController = {
         }
     }],
 
-
-
-
-
-
-
-
-
-
-
 };
 
 

@@ -3,7 +3,7 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 
 // Register POST route
-router.post('/register', ...authController.register);
+router.post('/register', authController.register);
 
 // Register GET route for Rendering the Register Page 
 router.get('/register', (req, res) => {

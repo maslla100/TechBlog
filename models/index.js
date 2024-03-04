@@ -1,4 +1,3 @@
-
 const Sequelize = require('sequelize');
 const env = process.env.NODE_ENV || 'development';
 const config = require('../config/config')[env];
@@ -10,53 +9,43 @@ if (config.use_env_variable) {
     sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
-
-
-
 const db = {};
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-// Import models
-const User = require('./users')(sequelize, Sequelize.DataTypes);
-const Post = require('./posts')(sequelize, Sequelize.DataTypes);
-const Comment = require('./comments')(sequelize, Sequelize.DataTypes);
+// Correcting the model imports according to the provided paths and variable names
+db.User = require('./user')(sequelize, Sequelize.DataTypes); // Assuming the file is named User.js
+db.Post = require('./post')(sequelize, Sequelize.DataTypes); // Assuming the file is named Post.js
+db.Comment = require('./comment')(sequelize, Sequelize.DataTypes); // Assuming the file is named Comment.js
 
 // Associations
-User.hasMany(Post, {
+db.User.hasMany(db.Post, {
     foreignKey: 'userId',
-    as: 'posts'
+    as: 'Post'
 });
-Post.belongsTo(User, {
+db.Post.belongsTo(db.User, {
     foreignKey: 'userId',
-    as: 'users'
-});
-
-User.hasMany(Comment, {
-    foreignKey: 'userId',
-    as: 'comments'
-});
-Comment.belongsTo(User, {
-    foreignKey: 'userId',
-    as: 'users'
+    as: 'User' // Correct singular usage as it refers to a single User
 });
 
-Post.hasMany(Comment, {
+db.User.hasMany(db.Comment, {
+    foreignKey: 'userId',
+    as: 'Comment'
+});
+db.Comment.belongsTo(db.User, {
+    foreignKey: 'userId',
+    as: 'User' // Correct singular usage as it refers to a single User
+});
+
+db.Post.hasMany(db.Comment, {
     foreignKey: 'postId',
-    as: 'comments'
+    as: 'Comment'
 });
-Comment.belongsTo(Post, {
+db.Comment.belongsTo(db.Post, {
     foreignKey: 'postId',
-    as: 'posts'
+    as: 'Post' // Correct singular usage as it refers to a single Post
 });
 
-// Export models and sequelize connection
-module.exports = {
-    sequelize,
-    Sequelize,
-    users,
-    posts,
-    comments,
-};
-
+// Consolidating the export statement
+module.exports = db;
