@@ -43,7 +43,6 @@ module.exports = (sequelize) => {
         modelName: 'User', // Note: modelName is typically singular and capitalized
         tableName: 'users', // Explicitly specifying the table name to match your DB schema
         timestamps: true,
-        paranoid: true,
         hooks: {
             beforeCreate: async (user) => {
                 user.email = user.email.toLowerCase();

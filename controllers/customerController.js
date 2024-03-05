@@ -1,6 +1,6 @@
 const db = require('../models');
 const { validationResult } = require('express-validator');
-const { ensureAuthenticated, ensureCustomer } = require('../middleware/authMiddleware');
+const { ensureAuthenticated } = require('../middleware/authMiddleware');
 const bcryptjs = require('bcryptjs');
 const saltRounds = 8;
 
@@ -8,7 +8,7 @@ const saltRounds = 8;
 const customerController = {
 
     // Display Customer Dashboard
-    showDashboard: [ensureAuthenticated, ensureCustomer, async (req, res) => {
+    showDashboard: [ensureAuthenticated, async (req, res) => {
         try {
             const customerId = req.user.id;
             let bookings = await db.Booking.findAll({
@@ -28,7 +28,7 @@ const customerController = {
             console.log("Rendering customer dashboard");
             console.log("Bookings Data: ", bookings);
 
-            res.render('customer/customerDashboard', {
+            res.render('/dashboard', {
                 customer: customer,
                 bookings: bookings,
                 canCreateBooking: true,

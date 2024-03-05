@@ -5,16 +5,13 @@ function getDashboardUrl(role) {
         case 'admin':
             dashboardUrl = '/admin/adminDashboard';
             break;
-        case 'owner':
-            dashboardUrl = '/owner/ownerDashboard';
-            break;
         case 'customer':
-            dashboardUrl = '/customer/customerDashboard';
+            dashboardUrl = '/dashboard';
             break;
         default:
             dashboardUrl = '/';
     }
-    console.log("utilsjs redirecting to:", dashboardUrl); // Add this line
+    console.log("utilsjs redirecting to:", dashboardUrl);
     return dashboardUrl;
 }
 
