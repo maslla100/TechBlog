@@ -4,8 +4,8 @@
   "description": "techblog",
   "main": "server.js",
   "scripts": {
-    "start": "NODE_ENV=production node app.js",
-    "dev": "NODE_ENV=development nodemon app.js",
+    "start": "NODE_ENV=production node server.js",
+    "dev": "NODE_ENV=development nodemon server.js",
     "watch": "nodemon server.js",
     "seed:all": "npx sequelize-cli db:seed:all",
     "seed:booking": "npx sequelize-cli db:seed --seed create.js"

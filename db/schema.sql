@@ -1,3 +1,4 @@
+
 DROP DATABASE IF EXISTS techBlog;
 CREATE DATABASE techBlog CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE techBlog;
@@ -7,6 +8,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `email` VARCHAR(255) NOT NULL UNIQUE,
   `password` VARCHAR(255) NOT NULL,
+  role ENUM('admin', 'customer') NOT NULL DEFAULT 'customer',
   `createdAt` DATETIME NOT NULL,
   `updatedAt` DATETIME NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -49,3 +51,4 @@ CREATE TABLE IF NOT EXISTS `postCategories` (
   FOREIGN KEY (`postId`) REFERENCES `posts`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`categoryId`) REFERENCES `categories`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

@@ -37,7 +37,13 @@ module.exports = (sequelize) => {
             type: DataTypes.DATE,
             allowNull: false,
             defaultValue: DataTypes.NOW
+        },
+        role: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: 'customer'
         }
+
     }, {
         sequelize,
         modelName: 'User', // Note: modelName is typically singular and capitalized

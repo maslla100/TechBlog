@@ -1,5 +1,5 @@
 const passport = require('passport');
-const { User } = require('../models');
+const { User } = require('../models/index');
 const { validationResult } = require('express-validator');
 const { getDashboardUrl } = require('../utils/utils.js');
 
@@ -11,13 +11,13 @@ const authController = {
         if (!errors.isEmpty()) {
             console.log("Validation errors in register at authcontroller:", errors.array());
             req.flash('error', 'Validation errors: ' + errors.array().map(e => e.msg).join(', '));
-            return res.redirect('/auth/register'); // Redirect back to the home page
+            return res.redirect('/'); // Redirect back to the home page
         }
 
         if (req.body.role && req.body.role !== 'customer') {
             console.log("Attempted to create a non-customer account");
             req.flash('error', 'Only customer accounts can be created.');
-            return res.redirect('/auth/register'); // Redirect back to the home page
+            return res.redirect('/'); // Redirect back to the home page
         }
 
         try {
@@ -26,7 +26,7 @@ const authController = {
             await User.create({ email, password, role: 'customer' });
             console.log("User created successfully, redirecting to login");
             req.flash('success', 'Registration successful. Please login.');
-            res.redirect('/auth/login'); // Redirect to the login page
+            res.redirect('/'); // Redirect to the login page
         } catch (error) {
             console.error("Error in register function:", error);
             if (error.name === 'SequelizeUniqueConstraintError') {
@@ -34,7 +34,7 @@ const authController = {
             } else {
                 req.flash('error', 'Registration failed');
             }
-            return res.redirect('auth/register'); // Redirect back to the home page
+            return res.redirect('/'); // Redirect back to the home page
         }
     },
 
@@ -50,13 +50,13 @@ const authController = {
             if (!user) {
                 console.log("Login failed:", info.message);
                 req.flash('error', info.message || 'error', 'Invalid username or password');
-                return res.redirect('/auth/register'); // Redirect to login page
+                return res.redirect('/'); // Redirect to login page
             }
             req.logIn(user, (err) => {
                 if (err) {
                     console.error("Error during req.logIn:", err);
                     req.flash('error', 'An error occurred during login.');
-                    return res.redirect('/auth/register'); // Redirect to home page or login page after logo
+                    return res.redirect('/'); // Redirect to home page or login page after logo
                 }
                 console.log("Login successful at authController, user role:", user.role);
                 console.log("Redirecting to at authController:", getDashboardUrl(user.role));

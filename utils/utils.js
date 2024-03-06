@@ -6,7 +6,7 @@ function getDashboardUrl(role) {
             dashboardUrl = '/admin/adminDashboard';
             break;
         case 'customer':
-            dashboardUrl = '/dashboard';
+            dashboardUrl = '/customer/dashboard';
             break;
         default:
             dashboardUrl = '/';
