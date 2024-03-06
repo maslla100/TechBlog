@@ -25,18 +25,21 @@ app.use(helmet({
                 "https://cdn.jsdelivr.net",
                 "https://ajax.googleapis.com",
                 "https://cdnjs.cloudflare.com",
+                "https://code.jquery.com", // Add this line for jQuery
+                "https://stackpath.bootstrapcdn.com" // Add this line for Bootstrap JS
             ],
             "style-src": [
                 "'self'",
                 "https://cdn.jsdelivr.net",
-                "'unsafe-inline'"
+                "'unsafe-inline'",
+                "https://stackpath.bootstrapcdn.com" // Add this line for Bootstrap CSS
             ],
             "img-src": ["'self'", "data:"],
             "connect-src": ["'self'"],
         },
     },
-
 }));
+
 
 
 // Apply rate limiting to all requests

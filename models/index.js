@@ -14,38 +14,49 @@ const db = {};
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-// Correcting the model imports according to the provided paths and variable names
-db.User = require('./user')(sequelize, Sequelize.DataTypes); // Assuming the file is named User.js
-db.Post = require('./post')(sequelize, Sequelize.DataTypes); // Assuming the file is named Post.js
-db.Comment = require('./comment')(sequelize, Sequelize.DataTypes); // Assuming the file is named Comment.js
+// Model imports
+db.User = require('./user')(sequelize, Sequelize.DataTypes);
+db.Post = require('./post')(sequelize, Sequelize.DataTypes);
+db.Comment = require('./comment')(sequelize, Sequelize.DataTypes);
 
 // Associations
 db.User.hasMany(db.Post, {
     foreignKey: 'userId',
-    as: 'Post'
+    as: 'posts',
+    onDelete: 'CASCADE',
 });
+
 db.Post.belongsTo(db.User, {
     foreignKey: 'userId',
-    as: 'User' // Correct singular usage as it refers to a single User
+    as: 'User'
 });
 
 db.User.hasMany(db.Comment, {
     foreignKey: 'userId',
     as: 'Comment'
 });
+
 db.Comment.belongsTo(db.User, {
     foreignKey: 'userId',
-    as: 'User' // Correct singular usage as it refers to a single User
+    as: 'User'
 });
 
 db.Post.hasMany(db.Comment, {
     foreignKey: 'postId',
     as: 'Comment'
 });
+
 db.Comment.belongsTo(db.Post, {
     foreignKey: 'postId',
-    as: 'Post' // Correct singular usage as it refers to a single Post
+    as: 'Post'
 });
 
-// Consolidating the export statement
+// Assuming the hook and additional logic are correctly placed or invoked after models definition
+db.Post.addHook('beforeSave', (post, options) => {
+    if (post.content) {
+        // Example logic for a hook
+        post.summary = post.content.substring(0, 100) + '...';
+    }
+});
+
 module.exports = db;

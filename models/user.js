@@ -8,8 +8,9 @@ module.exports = (sequelize) => {
             return bcrypt.compareSync(password, this.password);
         }
     }
+
     User.init({
-        // Model attributes are defined here
+        // Model attributes
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -21,44 +22,63 @@ module.exports = (sequelize) => {
             allowNull: false,
             unique: true,
             validate: {
-                isEmail: true // Validates that the string is an email
+                isEmail: {
+                    msg: 'Must be a valid email address',
+                },
             }
         },
         password: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isStrongPassword(value) {
+                    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+                    if (!strongPasswordRegex.test(value)) {
+                        throw new Error('Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, one number, and one special character.');
+                    }
+                },
+            },
+
+        },
+        role: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: 'customer',
+            validate: {
+                isIn: {
+                    args: [['customer', 'admin', 'editor']],
+                    msg: "Role must be one of 'customer', 'admin', or 'editor'",
+                },
+            },
         },
         createdAt: {
             type: DataTypes.DATE,
             allowNull: false,
-            defaultValue: DataTypes.NOW // Automatically set to the current time if not provided
+            defaultValue: DataTypes.NOW
         },
         updatedAt: {
             type: DataTypes.DATE,
             allowNull: false,
             defaultValue: DataTypes.NOW
         },
-        role: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            defaultValue: 'customer'
-        }
-
     }, {
         sequelize,
-        modelName: 'User', // Note: modelName is typically singular and capitalized
-        tableName: 'users', // Explicitly specifying the table name to match your DB schema
+        modelName: 'User',
+        tableName: 'users',
         timestamps: true,
+        defaultScope: {
+            attributes: { exclude: ['password'] },
+        },
         hooks: {
             beforeCreate: async (user) => {
                 user.email = user.email.toLowerCase();
-                const salt = await bcrypt.genSalt(10); // Changed salt rounds to 10, which is a common choice
-                user.password = await bcrypt.hash(user.password, salt);
+                if (user.password) {
+                    const salt = await bcrypt.genSalt(10);
+                    user.password = await bcrypt.hash(user.password, salt);
+                }
             },
             beforeUpdate: async (user) => {
-                if (user.changed('email')) {
-                    user.email = user.email.toLowerCase();
-                }
+                user.email = user.changed('email') ? user.email.toLowerCase() : user.email;
                 if (user.changed('password')) {
                     const salt = await bcrypt.genSalt(10);
                     user.password = await bcrypt.hash(user.password, salt);
@@ -69,3 +89,5 @@ module.exports = (sequelize) => {
 
     return User;
 };
+
+

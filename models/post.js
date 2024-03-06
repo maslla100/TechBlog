@@ -1,5 +1,4 @@
 const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../config/config'); // Ensure this path correctly points to your Sequelize config
 
 module.exports = (sequelize) => {
     class Post extends Model { }
@@ -14,12 +13,31 @@ module.exports = (sequelize) => {
         },
         title: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                notEmpty: {
+                    msg: 'The title must not be empty',
+                },
+                len: {
+                    args: [10, 255],
+                    msg: 'The title must be between 10 and 255 characters long',
+                },
+            },
         },
         content: {
             type: DataTypes.TEXT,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                notEmpty: {
+                    msg: 'The content must not be empty',
+                },
+                len: {
+                    args: [20, 5000],
+                    msg: 'The content must be between 20 and 5000 characters long',
+                },
+            },
         },
+
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -43,7 +61,14 @@ module.exports = (sequelize) => {
         sequelize, // Passing the connection instance
         modelName: 'Post', // Choosing the model name
         tableName: 'posts', // Defining the table name explicitly
-        timestamps: false // Opting out of Sequelize's automatic timestamp management
+        timestamps: true, // Opting out of Sequelize's automatic timestamp management
+        paranoid: true, // Enables soft deletes
     });
+    Post.addHook('beforeValidate', (post) => {
+        if (post.title) post.title = post.title.trim();
+        if (post.content) post.content = post.content.trim();
+    });
+
+
     return Post;
 };

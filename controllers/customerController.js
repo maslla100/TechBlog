@@ -17,11 +17,17 @@ const customerController = {
                 order: [['createdAt', 'DESC']] // Orders posts by creation date, newest first
             });
 
+            // Log the fetched posts to console
+            console.log("Fetched posts:", JSON.stringify(posts, null, 2));
+
             // Convert the Sequelize objects into plain JSON objects
             const blogs = posts.map(post => post.get({ plain: true }));
 
+            // Log the blogs to be rendered to console
+            console.log("Blogs to render:", JSON.stringify(blogs, null, 2));
+
             // Render a view and pass the retrieved blogs to it
-            res.render('customer/dashboard', { blogs });
+            res.render('customer/dashboard', { blogs, user: req.user });
         } catch (error) {
             console.error('Error fetching tech blogs:', error);
             res.status(500).send('Internal Server Error');
@@ -29,37 +35,8 @@ const customerController = {
     },
 
 
-    createBlogPost: async (req, res) => {
-        // Ensure the user is authenticated
-        if (!req.isAuthenticated()) {
-            req.flash('error', 'You must be logged in to create a blog post.');
-            return res.redirect('/');
-        }
 
-        const { title, content, categories } = req.body; // Assuming categories is optional and an array of category IDs
-        const userId = req.user.id; // Assuming the user's ID is available in the request object after authentication
 
-        try {
-            // Create the blog post
-            const newPost = await Post.create({
-                title,
-                content,
-                userId // Associating the new post with the logged-in user
-            });
-
-            // If categories are provided, associate them with the post
-            if (categories && Array.isArray(categories)) {
-                await newPost.setCategories(categories); // Assuming a many-to-many relationship setup in your Sequelize models
-            }
-
-            req.flash('success', 'Blog post created successfully.');
-            res.redirect('customer/dashboard'); // Redirect to the dashboard or the new post's page
-        } catch (error) {
-            console.error('Error creating new blog post:', error);
-            req.flash('error', 'Error creating blog post.');
-            res.redirect('customer/dashboard'); // Redirect back to the dashboard or form with an error message
-        }
-    },
 
 
     editBlogPost: async (req, res) => {
@@ -96,6 +73,38 @@ const customerController = {
         }
     },
 
+    createBlogPost: async (req, res) => {
+        // Ensure the user is authenticated
+        if (!req.isAuthenticated()) {
+            req.flash('error', 'You must be logged in to create a blog post.');
+            return res.redirect('/');
+        }
+
+        const { title, content, categories } = req.body; // Assuming categories is optional and an array of category IDs
+        const userId = req.user.id; // Assuming the user's ID is available in the request object after authentication
+
+        try {
+            // Create the blog post
+            const newPost = await Post.create({
+                title,
+                content,
+                userId // Associating the new post with the logged-in user
+            });
+
+            // If categories are provided, associate them with the post
+            if (categories && Array.isArray(categories)) {
+                await newPost.setCategories(categories); // Assuming a many-to-many relationship setup in your Sequelize models
+            }
+
+            req.flash('success', 'Blog post created successfully.');
+            res.redirect('/customer/createBlogPost'); // Redirect to the dashboard or the new post's page
+        } catch (error) {
+            console.error('Error creating new blog post:', error);
+            req.flash('error', 'Error creating blog post.');
+            res.redirect('/customer/createBlogPost'); // Redirect back to the dashboard or form with an error message
+        }
+    },
+
 
     deleteBlogPost: async (req, res) => {
         const { postId } = req.params; // Assuming the post ID is passed as a URL parameter
@@ -120,7 +129,37 @@ const customerController = {
             req.flash('error', 'Error deleting blog post.');
             res.redirect('customer/dashboard'); // Redirect back to the dashboard with an error message
         }
+    },
+
+    submitComment: async (req, res) => {
+        const { postId } = req.params; // ID of the post being commented on
+        const { comment } = req.body; // The comment text
+        const userId = req.user.id; // Assuming the user's ID is available after authentication
+
+        try {
+            // Ensure the post exists
+            const post = await Post.findByPk(postId);
+            if (!post) {
+                req.flash('error', 'Post not found.');
+                return res.redirect('/customer/viewTechBlogPost');
+            }
+
+            // Create the comment
+            await db.Comment.create({
+                content: comment,
+                postId: postId,
+                userId: userId
+            });
+
+            req.flash('success', 'Comment added successfully.');
+            res.redirect(`/customer/viewTechBlogPost#${postId}`); // Redirect back to the post
+        } catch (error) {
+            console.error('Error submitting comment:', error);
+            req.flash('error', 'Error submitting comment.');
+            res.redirect('/customer/viewTechBlogPost'); // Redirect back to the post
+        }
     }
+
 
 };
 

@@ -5,13 +5,6 @@ const { ensureAuthenticated } = require('../middleware/authMiddleware');
 
 
 
-// Middleware for logging
-const logCustomerDashboardAccess = (req, res, next) => {
-    console.log("Accessing customer dashboard route");
-    next(); // Pass control to the next handler, which is showDashboard in this case
-};
-
-
 
 // Route for dashboard Display!
 router.get('/dashboard', ensureAuthenticated, (req, res) => {
@@ -19,17 +12,38 @@ router.get('/dashboard', ensureAuthenticated, (req, res) => {
     res.render('customer/dashboard');
 });
 
-//Route to view events on dashboard
-router.get('/customer/dashboard', ensureAuthenticated, customerController.viewTechBlogs);
+
+//Route to view events on viewTechBlogPost 
+router.get('/viewTechBlogPost', ensureAuthenticated, customerController.viewTechBlogs);
+
+// Route to render the form for creating a new blog post
+router.get('/viewTechBlogPost', ensureAuthenticated, (req, res) => {
+    res.render('customer/viewTechBlogPost');
+});
+
 
 //Route to create events on dashboard
-router.post('/customer/createPost', ensureAuthenticated, customerController.createBlogPost);
+router.post('/submitcomment/:postId', ensureAuthenticated, customerController.submitComment);
+
+//Route to create events on dashboard
+router.post('/createBlogPost', ensureAuthenticated, customerController.createBlogPost);
+
+// Route to render the form for creating a new blog post
+router.get('/createBlogPost', ensureAuthenticated, (req, res) => {
+    res.render('customer/createBlogPost');
+});
 
 //Route to edit events on dashboard
-router.patch('/customer/editPost:id', ensureAuthenticated, customerController.editBlogPost);
+router.patch('/editBlogPost/:id', ensureAuthenticated, customerController.editBlogPost);
+
+// Route to render the form for creating a new blog post
+router.get('/editBlogPost', ensureAuthenticated, (req, res) => {
+    res.render('customer/editBlogPost');
+});
+
 
 //Route to delete events on dashboard
-router.delete('/customer/deletePost/:id', ensureAuthenticated, customerController.deleteBlogPost);
+router.delete('/deleteBlogPost/:id', ensureAuthenticated, customerController.deleteBlogPost);
 
 
 

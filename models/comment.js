@@ -1,5 +1,4 @@
 const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../config/config'); // Ensure this path correctly points to your Sequelize config
 
 module.exports = (sequelize) => {
     class Comment extends Model { }
@@ -14,16 +13,26 @@ module.exports = (sequelize) => {
         },
         content: {
             type: DataTypes.TEXT,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                notNull: { msg: 'Content cannot be null' },
+                notEmpty: { msg: 'Content cannot be empty' },
+                len: {
+                    args: [10, 500],
+                    msg: 'Content must be between 10 and 500 characters'
+                }
+            }
         },
         postId: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'posts', // Assuming 'posts' is the table name
+                model: 'posts',
                 key: 'id',
-            }
+            },
+            onDelete: 'CASCADE'
         },
+
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -45,9 +54,11 @@ module.exports = (sequelize) => {
     }, {
         sequelize,
         modelName: 'Comment',
+        indexes: [{ fields: ['postId'], unique: false }, { fields: ['userId'], unique: false }],
         tableName: 'comments',
-        timestamps: true // Changed to true for automatic handling
-    });
+        timestamps: true
+    }
+    );
 
     return Comment; // Ensure you return the model
 };

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Blog Posts</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">TechBlog</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <!-- Navigation Items -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Blog Posts Display -->
+    <div class="container mt-5">
+        <h2>Blog Posts</h2>
+        {{#each blogs as |post|}}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="card-title">{{post.title}}</h3>
+                <p class="card-text">{{post.content}}</p>
+                <p class="text-muted">Posted by {{post.User.email}} on {{formatDate post.createdAt "MMM DD, YYYY"}}</p>
+
+                <!-- Conditional Edit Button -->
+                {{#if (isPostOwner post.userId user.id)}}
+                <a href="/customer/editBlogPost/{{post.id}}" class="btn btn-secondary mb-2">Edit</a>
+                {{/if}}
+
+                <!-- Comment Form -->
+                <form action="/submitcomment/{{post.id}}" method="POST">
+                    <div class="form-group">
+                        <textarea name="comment" class="form-control mb-2" placeholder="Write a comment..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Comment</button>
+                </form>
+
+                <!-- Display Comments (Assuming comments are part of the post object) -->
+                {{#if post.comments}}
+                <div class="comments">
+                    <h5>Comments:</h5>
+                    {{#each post.comments as |comment|}}
+                    <p>{{comment.text}} - <small>{{comment.User.email}}, {{formatDate comment.createdAt "MMM DD,
+                            YYYY"}}</small></p>
+                    {{/each}}
+                </div>
+                {{/if}}
+            </div>
+        </div>
+        {{else}}
+        <p>No blog posts available.</p>
+        {{/each}}
+    </div>
+</body>
+
+</html>
