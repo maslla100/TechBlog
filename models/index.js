@@ -51,10 +51,8 @@ db.Comment.belongsTo(db.Post, {
     as: 'Post'
 });
 
-// Assuming the hook and additional logic are correctly placed or invoked after models definition
 db.Post.addHook('beforeSave', (post, options) => {
     if (post.content) {
-        // Example logic for a hook
         post.summary = post.content.substring(0, 100) + '...';
     }
 });

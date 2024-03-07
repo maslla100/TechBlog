@@ -35,43 +35,86 @@ const customerController = {
     },
 
 
+    // In customerController.js
+    singleBlogPost: async (req, res) => {
+        const { postId } = req.params;
+        try {
+            const post = await db.Post.findByPk(postId, {
+                include: [
+                    {
+                        model: db.Comment,
+                        as: 'comments',
+                        include: [{ model: db.User, as: 'User', attributes: ['email'] }]
+                    },
+                    {
+                        model: db.User,
+                        as: 'User',
+                        attributes: ['email']
+                    }
+                ]
+            });
+
+            if (post) {
+                // Convert Sequelize object to plain object
+                const postPlain = post.get({ plain: true });
+                res.render('customer/singleBlogPost', { post: postPlain, user: req.user });
+            } else {
+                req.flash('error', 'Post not found.');
+                return res.redirect('/customer/dashboard');
+            }
+        } catch (error) {
+            console.error('Error fetching single blog post:', error);
+            req.flash('error', 'Error fetching post.');
+            return res.redirect('/customer/dashboard');
+        }
+    },
 
 
 
 
     editBlogPost: async (req, res) => {
-        const { postId } = req.params; // Assuming the post ID is passed as a URL parameter
-        const { title, content, categories } = req.body;
-        const userId = req.user.id; // Assuming the user's ID is available after authentication
+        const { postId } = req.params;
 
         try {
-            // Fetch the existing post from the database
-            const post = await Post.findOne({ where: { id: postId, userId } });
+            const post = await Post.findOne({
+                where: { id: postId },
+                include: [{ model: db.User, as: 'User', attributes: ['email'] }]
+            });
 
-            if (!post) {
+            // Check if post exists
+            if (post) {
+                // Render the edit post view with the current post details
+                res.render('customer/editBlogPost', { post: post.get({ plain: true }), user: req.user });
+            } else {
+                // If post not found, redirect to dashboard with an error message
                 req.flash('error', 'Post not found or you do not have permission to edit this post.');
-                return res.redirect('customer/dashboard');
+                return res.redirect('/customer/dashboard');
             }
+        } catch (error) {
+            console.error('Error fetching editable post:', error);
+            req.flash('error', 'Error fetching post for editing.');
+            res.redirect('/customer/dashboard');
+        }
+    },
 
-            // Update the post with new values
-            await post.update({ title, content });
 
-            // If categories are provided, update them
-            if (categories && Array.isArray(categories)) {
-                // Assuming a many-to-many relationship setup in your Sequelize models
-                // First, clear existing categories, then set new ones
-                await post.setCategories([]); // Clear existing associations
-                await post.setCategories(categories); // Set new associations
-            }
+    updateBlogPost: async (req, res) => {
+        const { postId } = req.params;
+        const { title, content, categories } = req.body;
+
+        try {
+            // Update the post
+            await Post.update({ title, content }, { where: { id: postId } });
 
             req.flash('success', 'Blog post updated successfully.');
-            res.redirect(`customer/dashboard/${postId}`); // Redirect to the updated post's page
+            res.redirect(`/customer/singleBlogPost/${postId}?updated=true`);
         } catch (error) {
             console.error('Error updating blog post:', error);
             req.flash('error', 'Error updating blog post.');
-            res.redirect('customer/dashboard'); // Redirect back to the dashboard or form with an error message
+            res.redirect(`/customer/editBlogPost/${postId}`);
         }
     },
+
 
     createBlogPost: async (req, res) => {
         // Ensure the user is authenticated
@@ -97,13 +140,20 @@ const customerController = {
             }
 
             req.flash('success', 'Blog post created successfully.');
-            res.redirect('/customer/createBlogPost'); // Redirect to the dashboard or the new post's page
+            res.redirect('/customer/dashboard'); // Redirect to the dashboard or the new post's page after successful creation
         } catch (error) {
-            console.error('Error creating new blog post:', error);
-            req.flash('error', 'Error creating blog post.');
-            res.redirect('/customer/createBlogPost'); // Redirect back to the dashboard or form with an error message
+            if (error.name === 'SequelizeValidationError') {
+                // Extracting validation error messages and joining them into a single string message
+                const errorMessage = error.errors.map(err => err.message).join('. ');
+                req.flash('error', `Error creating blog post: ${errorMessage}`);
+            } else {
+                console.error('Error creating new blog post:', error);
+                req.flash('error', 'Error creating blog post.');
+            }
+            res.redirect('/customer/createBlogPost'); // Redirect back to the form with an error message
         }
     },
+
 
 
     deleteBlogPost: async (req, res) => {
@@ -132,35 +182,56 @@ const customerController = {
     },
 
     submitComment: async (req, res) => {
-        const { postId } = req.params; // ID of the post being commented on
-        const { comment } = req.body; // The comment text
-        const userId = req.user.id; // Assuming the user's ID is available after authentication
+        const { postId } = req.params;
+        const { content } = req.body;
+        const userId = req.user.id;
 
         try {
-            // Ensure the post exists
-            const post = await Post.findByPk(postId);
-            if (!post) {
-                req.flash('error', 'Post not found.');
-                return res.redirect('/customer/viewTechBlogPost');
-            }
-
             // Create the comment
             await db.Comment.create({
-                content: comment,
-                postId: postId,
-                userId: userId
+                content,
+                postId,
+                userId
             });
 
+            // Fetch the post and its comments again to display
+            const post = await db.Post.findOne({
+                where: { id: postId },
+                include: [
+                    {
+                        model: db.Comment,
+                        as: 'Comment',
+                        include: [
+                            {
+                                model: db.User,
+                                as: 'User',
+                                attributes: ['id', 'email'] // Adjust as necessary
+                            }
+                        ]
+                    },
+                    {
+                        model: db.User,
+                        as: 'User',
+                        attributes: ['id', 'email']
+                    }
+                ]
+            });
+
+            if (!post) {
+                req.flash('error', 'Post not found.');
+                return res.redirect('/customer/dashboard');
+            }
+
+            // Redirect to the singleBlogPost page with the updated post and comments
+            //res.render('customer/singleBlogPost', { post: post.get({ plain: true }), user: req.user, updated: true });
             req.flash('success', 'Comment added successfully.');
-            res.redirect(`/customer/viewTechBlogPost#${postId}`); // Redirect back to the post
+            res.redirect(`/customer/singleBlogPost/${postId}`); // Adjust this route if necessary
         } catch (error) {
             console.error('Error submitting comment:', error);
             req.flash('error', 'Error submitting comment.');
-            res.redirect('/customer/viewTechBlogPost'); // Redirect back to the post
+            res.redirect(`/customer/singleBlogPost/${postId}`);
         }
-    }
-
-
+    },
 };
 
 

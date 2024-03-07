@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 
 module.exports = (sequelize) => {
     class User extends Model {
-        // Instance method to validate password
         validPassword(password) {
             return bcrypt.compareSync(password, this.password);
         }

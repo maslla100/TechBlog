@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` VARCHAR(255) NOT NULL,
   role ENUM('admin', 'customer') NOT NULL DEFAULT 'customer',
   `createdAt` DATETIME NOT NULL,
-  `updatedAt` DATETIME NOT NULL
+  `updatedAt` DATETIME NOT NULL,
+  `deletedAt` DATETIME DEFAULT NULL 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Create Posts Table
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `userId` INT NOT NULL,
   `createdAt` DATETIME NOT NULL,
   `updatedAt` DATETIME NOT NULL,
+  `deletedAt` DATETIME DEFAULT NULL,
   FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -32,6 +34,7 @@ CREATE TABLE IF NOT EXISTS `comments` (
   `userId` INT NOT NULL,
   `createdAt` DATETIME NOT NULL,
   `updatedAt` DATETIME NOT NULL,
+  `deletedAt` DATETIME DEFAULT NULL, 
   FOREIGN KEY (`postId`) REFERENCES `posts`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

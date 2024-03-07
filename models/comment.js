@@ -37,7 +37,7 @@ module.exports = (sequelize) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'users', // Assuming 'users' is the table name
+                model: 'users',
                 key: 'id',
             }
         },
@@ -60,5 +60,5 @@ module.exports = (sequelize) => {
     }
     );
 
-    return Comment; // Ensure you return the model
+    return Comment;
 };

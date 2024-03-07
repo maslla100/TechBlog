@@ -8,13 +8,10 @@ passport.use(new LocalStrategy({ usernameField: 'email' },
     async (email, password, done) => {
         console.log("Passport local strategy for email:", email); // Log email being used
         try {
-            // Find user by email and explicitly include the password field
-            const user = await User.findOne({
-                where: { email: email },
-                attributes: ['id', 'email', 'password', 'role'], // Correct placement of attributes
-            });
-
-            console.log("User found:", user ? user.email : 'No user found'); // Log if user is found or not
+            // Find user by email
+            const user = await User.findOne({ where: { email: email } });
+            attributes: ['id', 'email', 'password', 'role'], // Explicitly include the password field
+                console.log("User found:", user ? user.email : 'No user found'); // Log if user is found or not
             if (!user) {
                 console.log("Incorrect email"); // Log if email is incorrect
                 return done(null, false, { message: 'Incorrect email.' });
@@ -59,5 +56,7 @@ passport.deserializeUser(async (id, done) => {
         done(err);
     }
 });
+
+
 
 module.exports = passport;

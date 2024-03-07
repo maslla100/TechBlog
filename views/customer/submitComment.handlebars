@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comment Submitted</title>
+    <!-- Link to your CSS files -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Comment Submission</h1>
+        {{#if successMessage}}
+        <div class="alert alert-success">
+            {{successMessage}}
+        </div>
+        {{else}}
+        <div class="alert alert-warning">
+            No comment was submitted.
+        </div>
+        {{/if}}
+        <div class="navigation">
+            <a href="/customer/dashboard">Return to Dashboard</a> |
+            <a href="/customer/viewTechBlogPost/{{postId}}">Go Back to Post</a>
+        </div>
+    </div>
+    <!-- Link to your JavaScript files -->
+    <script src="/js/script.js"></script>
+</body>
+
+</html>

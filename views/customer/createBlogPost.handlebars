@@ -24,22 +24,19 @@
                         <a class="nav-link" href="/customer/dashboard">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/customer/viewTechBlogPost">View Blogs</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/customer/createBlogPost">Create Blog</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/customer/editBlogPost">Edit or Delete Blog</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="/auth/logout">Logout</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-
+    <!-- Flash Messages -->
+    {{#if messages.error}}
+    <div class="alert alert-danger" role="alert">{{messages.error}}</div>
+    {{/if}}
+    {{#if messages.success}}
+    <div class="alert alert-success" role="alert">{{messages.success}}</div>
+    {{/if}}
     <!-- Create Blog Post Form -->
     <div class="container mt-5">
         <h2>Create Blog Post</h2>

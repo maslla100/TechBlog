@@ -42,8 +42,8 @@ module.exports = (sequelize) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'users', // 'users' refers to table name
-                key: 'id', // 'id' refers to column name in users table
+                model: 'users',
+                key: 'id', // 
             }
         },
         createdAt: {
@@ -57,12 +57,11 @@ module.exports = (sequelize) => {
             defaultValue: DataTypes.NOW
         }
     }, {
-        // Model options
-        sequelize, // Passing the connection instance
-        modelName: 'Post', // Choosing the model name
-        tableName: 'posts', // Defining the table name explicitly
-        timestamps: true, // Opting out of Sequelize's automatic timestamp management
-        paranoid: true, // Enables soft deletes
+
+        sequelize,
+        modelName: 'Post',
+        tableName: 'posts',
+        paranoid: true,
     });
     Post.addHook('beforeValidate', (post) => {
         if (post.title) post.title = post.title.trim();

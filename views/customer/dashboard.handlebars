@@ -25,14 +25,9 @@
                         <a class="nav-link" href="/customer/dashboard">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/customer/viewTechBlogPost">View Blogs</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="/customer/createBlogPost">Create Blog</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/customer/editBlogPost">Edit/Delete Blog</a>
-                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="/auth/logout">Logout</a>
                     </li>
@@ -50,7 +45,9 @@
                     <div class="card-body">
                         <h5 class="card-title">{{blog.title}}</h5>
                         <p class="card-text">{{blog.content}}</p>
-                        <a href="/viewTechBlogs{{blog.id}}" class="btn btn-primary">Read More</a>
+                        <a href="/customer/singleBlogPost/{{blog.id}}" class="btn btn-primary">Read More</a>
+                        <a href="/customer/editBlogPost/{{blog.id}}" class="btn btn-primary">Edit Post</a>
+                        <a href="/customer/submitComment/{{blog.id}}" class="btn btn-primary">Submit a Comment</a>
                     </div>
                 </div>
             </div>

@@ -8,6 +8,7 @@ const flash = require('connect-flash');
 const dotenv = require('dotenv').config();
 const path = require('path');
 const rateLimit = require('express-rate-limit');
+const methodOverride = require('method-override');
 
 // Initialize Express app
 const app = express();
@@ -61,6 +62,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Use method-override middleware here
+app.use(methodOverride('_method')); // This line should be added
 
 // Static folder setup
 app.use(express.static(path.join(__dirname, 'public')));
