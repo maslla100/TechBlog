@@ -77,13 +77,11 @@ input[type="password"] {
 
     h1 {
         font-size: 1.5rem;
-        /* Adjust the size as needed */
     }
 
     .btn.login-btn {
         padding: 8px;
         font-size: 0.9rem;
-        /* Adjust the size as needed */
     }
 }
 
@@ -91,7 +89,6 @@ input[type="email"]:focus,
 input[type="password"]:focus,
 .btn.login-btn:focus {
     outline: 2px solid #0056b3;
-    /* Example focus style */
     outline-offset: 2px;
 }
 

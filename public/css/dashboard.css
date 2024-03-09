@@ -10,7 +10,7 @@ p {
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #d1e6f9;
     color: #333;
     line-height: 1.6;
 }
@@ -22,26 +22,52 @@ body {
     padding: 0 20px;
 }
 
-/* Navigation Bar Styling */
+/* Add a box-shadow for depth */
 .navbar {
-    background-color: #007bff;
-    color: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(243, 231, 231, 0.1);
 }
 
-.navbar-brand,
-.nav-link {
-    color: #007bff !important;
-
+.navbar-brand:hover {
+    transform: scale(1.05);
+    /* Slightly enlarges the logo on hover */
+    transition: transform 0.3s ease;
+    /* Smooth transition */
 }
 
-.navbar-toggler {
-    background-color: #ffffff;
+.navbar-brand {
+    color: #afd6f5 !important;
+    /* Ensures white color */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    /* Adds a shadow for depth */
 }
+
+
+/* Change the navbar-toggler icon color for better visibility */
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' fill='%23ffffff' viewBox='0 0 30 30'><path d='M0 6h30v4H0zm0 7h30v4H0zm0 7h30v4H0z'/></svg>");
+}
+
+.navbar-nav .nav-link {
+    color: #afd6f5 !important;
+    /* Ensuring text is white */
+    transition: color 0.3s ease;
+    /* Smooth transition for color change */
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link:focus {
+    color: #0d77e1 !important;
+    /* A lighter shade on hover/focus */
+    text-decoration: none;
+    /* Removes underline */
+}
+
+
 
 /* Card Styling for Blog Posts */
 .card {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     border: none;
     border-radius: 10px;
 }
@@ -59,6 +85,17 @@ body {
     font-size: 1rem;
     line-height: 1.5;
 }
+
+.card:hover {
+    transform: translateY(-5px);
+    /* Slight lift */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    /* Increased shadow for depth */
+    transition: all 0.3s ease-out;
+    /* Smooth transition */
+}
+
+
 
 .text-muted {
     font-size: 0.85rem;
@@ -96,7 +133,33 @@ body {
 
 
 
-/* Additional Utility Classes */
 .text-muted {
+    color: #6c757d;
+}
+
+.card-date {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.submit-comment textarea {
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    padding: 12px;
+}
+
+.comment {
+    background-color: #f8f9fa;
+    border-left: 5px solid #007bff;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+}
+
+.no-comments {
+    padding-left: 25px;
+    margin-top: -10px;
     color: #6c757d;
 }

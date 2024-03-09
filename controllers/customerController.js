@@ -4,6 +4,7 @@ const { ensureAuthenticated } = require('../middleware/authMiddleware');
 const bcryptjs = require('bcryptjs');
 const saltRounds = 8;
 const { Post } = require('../models/index');
+const moment = require('moment'); // Require moment at the top of your file
 
 
 
@@ -11,22 +12,52 @@ const customerController = {
 
     viewTechBlogs: async (req, res) => {
         try {
-            // Retrieve all posts from the database
-            const posts = await Post.findAll({
-                include: [{ model: db.User, as: 'User', attributes: ['email'] }], // Assuming you want to include the author's email
-                order: [['createdAt', 'DESC']] // Orders posts by creation date, newest first
+            const posts = await db.Post.findAll({
+                include: [
+                    {
+                        model: db.User,
+                        as: 'User',
+                        attributes: ['email']
+                    },
+                    {
+                        model: db.Comment,
+                        as: 'Comment',
+                        include: [{
+                            model: db.User,
+                            as: 'User',
+                            attributes: ['email']
+                        }]
+                    }
+                ],
+                order: [['createdAt', 'DESC']]
             });
 
-            // Log the fetched posts to console
-            console.log("Fetched posts:", JSON.stringify(posts, null, 2));
+            // Function to format the createdAt date
+            const formatDate = (date) => moment(date).format('ddd MMM DD YYYY');
 
-            // Convert the Sequelize objects into plain JSON objects
-            const blogs = posts.map(post => post.get({ plain: true }));
+            // Function to create a content preview
+            const truncateContent = (content, length = 100) => {
+                return content.length <= length ? content : `${content.substring(0, length)}...`;
+            };
 
-            // Log the blogs to be rendered to console
-            console.log("Blogs to render:", JSON.stringify(blogs, null, 2));
+            // Convert the Sequelize objects into plain JSON objects, format the dates, and add a content preview
+            const blogs = posts.map(post => {
+                const plainPost = post.get({ plain: true });
+                plainPost.formattedCreatedAt = formatDate(plainPost.createdAt);
+                plainPost.preview = truncateContent(plainPost.content, 100); // Adjust the length as needed
 
-            // Render a view and pass the retrieved blogs to it
+                // Format comment dates
+                if (plainPost.Comment) {
+                    plainPost.Comment = plainPost.Comment.map(comment => {
+                        comment.formattedCreatedAt = formatDate(comment.createdAt);
+                        return comment;
+                    });
+                }
+
+                return plainPost;
+            });
+
+            // Render the dashboard view with the blogs data
             res.render('customer/dashboard', { blogs, user: req.user });
         } catch (error) {
             console.error('Error fetching tech blogs:', error);
@@ -35,39 +66,66 @@ const customerController = {
     },
 
 
-    // In customerController.js
-    singleBlogPost: async (req, res) => {
+
+
+
+
+
+    viewSingleBlogPost: async (req, res) => {
         const { postId } = req.params;
         try {
-            const post = await db.Post.findByPk(postId, {
+            const post = await db.Post.findOne({
+                where: { id: postId },
                 include: [
-                    {
-                        model: db.Comment,
-                        as: 'comments',
-                        include: [{ model: db.User, as: 'User', attributes: ['email'] }]
-                    },
                     {
                         model: db.User,
                         as: 'User',
-                        attributes: ['email']
+                        attributes: ['email'] // Assuming 'name' is not available based on your schema
+                    },
+                    {
+                        model: db.Comment,
+                        as: 'Comment',
+                        include: [{
+                            model: db.User,
+                            as: 'User',
+                            attributes: ['email']
+                        }]
                     }
                 ]
             });
-
             if (post) {
-                // Convert Sequelize object to plain object
-                const postPlain = post.get({ plain: true });
-                res.render('customer/singleBlogPost', { post: postPlain, user: req.user });
-            } else {
-                req.flash('error', 'Post not found.');
-                return res.redirect('/customer/dashboard');
+                const formattedPostDate = moment(post.createdAt).format('ddd MMM DD YYYY');
+                // Ensure comments are formatted correctly
+                const commentsWithFormattedDates = post.Comment.map(comment => {
+                    return {
+                        ...comment.get({ plain: true }),
+                        formattedDate: moment(comment.createdAt).format('ddd MMM DD YYYY') // Ensure this line correctly formats the date
+                    };
+                });
+
+                res.render('customer/singleBlogPost', {
+                    post: post.get({ plain: true }),
+                    formattedPostDate,
+                    comments: commentsWithFormattedDates, // Make sure to pass this correctly
+                    postId: postId,
+                    user: req.user
+                });
+            }
+            else {
+                res.status(404).send('Post not found'); // Adjust according to your application's error handling
             }
         } catch (error) {
             console.error('Error fetching single blog post:', error);
-            req.flash('error', 'Error fetching post.');
-            return res.redirect('/customer/dashboard');
+            res.status(500).send('Internal Server Error');
         }
     },
+
+
+
+
+
+
+
 
 
 
@@ -173,11 +231,11 @@ const customerController = {
             await post.destroy();
 
             req.flash('success', 'Blog post deleted successfully.');
-            res.redirect('customer/dashboard'); // Redirect back to the dashboard
+            res.redirect('/customer/dashboard'); // Redirect back to the dashboard
         } catch (error) {
             console.error('Error deleting blog post:', error);
             req.flash('error', 'Error deleting blog post.');
-            res.redirect('customer/dashboard'); // Redirect back to the dashboard with an error message
+            res.redirect('/customer/dashboard'); // Redirect back to the dashboard with an error message
         }
     },
 
@@ -232,6 +290,8 @@ const customerController = {
             res.redirect(`/customer/singleBlogPost/${postId}`);
         }
     },
+
+
 };
 
 

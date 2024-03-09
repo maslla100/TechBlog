@@ -98,16 +98,12 @@ input[type="password"] {
     border-radius: 4px;
     cursor: pointer;
     display: block;
-    /* Ensure buttons are block-level for full-width */
     margin-bottom: 10px;
-    /* Add space between buttons */
     box-sizing: border-box;
-    /* Include padding and border in the element's total width and height */
 }
 
 .btn:hover {
     opacity: 0.9;
-    /* Slight transparency effect on hover for all buttons */
 }
 
 .login-btn {
@@ -143,7 +139,6 @@ input[type="password"] {
     width: 100%;
     max-width: 400px;
     margin: 20px;
-    /* Add margin for spacing from viewport edges */
 }
 
 @media (max-width: 768px) {
@@ -156,12 +151,10 @@ input[type="password"] {
 
     h1 {
         font-size: 1.5rem;
-        /* Adjust based on preference */
     }
 
     .btn {
         padding: 8px;
         font-size: 0.9rem;
-        /* Adjust based on preference */
     }
 }

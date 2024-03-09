@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <!-- Bootstrap CSS
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/dashboard.css">  Adjust the path if necessary -->
+    <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 
 <body>
@@ -27,7 +27,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/customer/createBlogPost">Create Blog</a>
                     </li>
-
                     <li class="nav-item">
                         <a class="nav-link" href="/auth/logout">Logout</a>
                     </li>
@@ -44,10 +43,26 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">{{blog.title}}</h5>
-                        <p class="card-text">{{blog.content}}</p>
-                        <a href="/customer/singleBlogPost/{{blog.id}}" class="btn btn-primary">Read More</a>
-                        <a href="/customer/editBlogPost/{{blog.id}}" class="btn btn-primary">Edit Post</a>
-                        <a href="/customer/submitComment/{{blog.id}}" class="btn btn-primary">Submit a Comment</a>
+                        <p class="card-date">Posted on {{blog.formattedCreatedAt}}</p>
+                        <p class="card-text">{{blog.preview}}</p>
+                        <a href="/customer/singleBlogPost/{{blog.id}}" class="btn btn-primary">Read More & Comment</a>
+                        <a href="/customer/editBlogPost/{{blog.id}}" class="btn btn-secondary">Edit Post</a>
+                    </div>
+
+                    <!-- Display comments for each blog post -->
+                    <div class="comments-section">
+                        <h6>Comments:</h6>
+                        {{#if blog.Comment}}
+                        {{#each blog.Comment as |comment|}}
+                        <div class="comment">
+                            <p><strong>{{comment.User.email}}</strong> says: {{comment.content}} <em>(Posted on
+                                    {{comment.formattedCreatedAt}})</em></p>
+
+                        </div>
+                        {{/each}}
+                        {{else}}
+                        <p class="no-comments">No comments yet.</p>
+                        {{/if}}
                     </div>
                 </div>
             </div>
@@ -55,10 +70,9 @@
         </div>
     </div>
 
-    <!-- Optional JavaScript and Bootstrap JS
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.x/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>  -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
 </html>

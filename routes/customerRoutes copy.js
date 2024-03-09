@@ -26,10 +26,15 @@ router.post('/editBlogPost/:postId', ensureAuthenticated, customerController.upd
 // Handle deletion of a blog post
 router.post('/deleteBlogPost/:postId', ensureAuthenticated, customerController.deleteBlogPost);
 
-router.get('/singleBlogPost/:postId', ensureAuthenticated, customerController.viewSingleBlogPost);
 
 
-router.post('/singleBlogPost/:postId/submitComment', ensureAuthenticated, customerController.submitComment);
+router.get('/singleBlogPost/:postId', ensureAuthenticated, customerController.submitComment);
+// Display form to create a new blog post
+router.get('/singleBlogPost/:postId', ensureAuthenticated, (req, res) => {
+    res.render('customer/singleBlogPost/post:Id');
+});
+// Handle submission of a new comment on a blog post
+router.post('/singleBlogPost/:postId/submitComments', ensureAuthenticated, customerController.submitComment);
 
 
 
